@@ -9,6 +9,17 @@ Parasitol.](https://www.sciencedirect.com/science/article/pii/S0166685103000458?
 
 This is a reimplementation to replace the now offline original deployment
 
+
+#
+
+This is modernisation and generalisation fork.
+
+Developed with the intention of using RNAit for other species such as Brugia Pahangi, as well as streamlining deployment.
+
+
+
+# OLD
+
 ## Setting up a development instance (MacOS)
 
 bash 4 is required for helper scripts, whereas the MacOS default is 3.2, so grab
