@@ -17,5 +17,4 @@ EXPOSE 8080
 
 COPY . /app
 
-#CMD [ "python3", "/app/uwsgi/RNAit.py" ]
 CMD [ "${CONDA_PREFIX}/bin/nginx" "--ini ${RNAIT_ROOT}/etc/uwsgi.conf"]
