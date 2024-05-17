@@ -1,0 +1,39 @@
+services:
+
+  rnait:
+    container_name: rnait
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: harbor.peak.scot/public/rnait:latest
+    networks:
+      - backend
+    deploy:
+      restart_policy:
+        condition: unless-stopped
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./app
+      dockerfile: ../dockerfile-nginx
+    image: harbor.peak.scot/public/rnait-nginx:latest
+    networks:
+      - tunnel
+      - backend
+    deploy:
+      restart_policy:
+        condition: unless-stopped
+
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    command: "tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN}"
+    networks:
+      - tunnel
+    deploy:
+      restart_policy:
+        condition: unless-stopped
+
+networks:
+  tunnel:
+  backend:

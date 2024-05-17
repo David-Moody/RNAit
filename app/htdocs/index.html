@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+    integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/RNAit.css">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+    integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+    crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"
+    integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9"
+    crossorigin="anonymous"></script>
+  <script src="/js/RNAit.js"></script>
+  <title>RNAit</title>
+</head>
+
+<body onpageshow='display_vals()'>
+  <div class='container'>
+    <div class='row header'>
+      <div class='col-md-9 '>
+        <a href='/RNAit'>
+          <img style='float:left;padding-left:15px' src="/images/RNAit2_150.png" width='75' alt="RNAit2" />
+        </a>
+        <h1>RNAi target selection for Trypanosome genomes</h1>
+      </div><!--col-md-10-->
+      <div class='col-md-3'>
+        <div><a href='http://www.dundee.ac.uk'><img src='/images/logo-white_150.png' width='150'
+              alt='University of Dundee logo' /></a></div>
+      </div> <!--col-md-2-->
+    </div><!--row-->
+    <div class='row'>
+      <div class='col-md-12'>
+        <p></p>
+        <form id='RNAit' method='POST' enctype='multipart/form-data' class='needs-validation' action='/query'
+          onreset='set_default_vals();' novalidate>
+          <div class='card'>
+            <h2 class='card-header'>
+              <span class='fas fa-question-circle help' onclick='helpToggle("seqinput_help",this);'></span>
+              Sequence Input
+            </h2>
+            <div class='card-body'>
+              <div class='form-group row'>
+                <label class='col-md-3 col-form-label' for='seqpaste'>Paste fasta format DNA sequence</label>
+                <div class='col-md-9'>
+                  <div class='row'>
+                    <textarea id='seqpaste' name='seqpaste' class='form-control'
+                      aria-describedby='seqpaste_info'></textarea>
+                    <small id='seqpaste_info'>This field accepts fasta formatted DNA sequences for the region to be
+                      targeted</small>
+                  </div>
+                </div>
+              </div>
+              <div class='form-group row'>
+                <label class='col-md-3 col-form-label' for='upload'>Upload fasta file</label>
+                <div class='col-md-9'>
+                  <div class='row'>
+                    <input type='file' id='upload' name='upload' class='form-control' aria-describedby='upload_info' />
+                    <small id='upload_info'>Select a fasta file containing the sequence of the region to be
+                      targeted</small>
+                    <div class='invalid-feedback'>Please paste a sequence or select a fasta file to upload</div>
+                  </div>
+                </div>
+              </div>
+              <div id='seqinput_help' style='display:none' class='row alert alert-primary'>
+                The sequence of the gene to be
+                targeted should be entered, either by pasting the sequence
+                into the top field, or selecting a file from your computer to
+                upload. The sequence should be provided in fasta format, where
+                the first line of the record beings with a '>' followed by the
+                sequence id, with the sequence on the subsequent lines
+                i.e.<br /><br /><span style='font-family:
+                  monospace'>&gt;seq_id<br />CTGCTAGTGATAGTCGATGCTAGTCTGACG</span>.
+              </div>
+            </div>
+          </div>
+
+          <!--<p>&nbsp;</p>-->
+
+          <div class='row'>
+            <div class='col-md-6'>
+              <div class='card'>
+                <h2 class='card-header'>
+                  <span class='fas fa-question-circle help' onclick='helpToggle("primer_help",this);'></span>
+                  Primer Selection
+                </h2>
+                <div class='card-body'>
+                  <div class='form-group row'>
+                    <label class='col-md-3 col-form-label' for='melting_temp' aria-describedby='melting_temp_info'>
+                      Melting temperature (˚C)
+                    </label>
+                    <div class='col-md-6'>
+                      <small id='melting_temp_info'>Required melting temperature of primer pair</small>
+                      <input type='range' id='melting_temp' name='melting_temp' class='form-contol col' min='55'
+                        max='65' value='60' oninput='melting_temp_out.value=melting_temp.value + "ºC"' />
+                      <output id='melting_temp_out'></output>
+                    </div><!--col-md-6-->
+                  </div><!--form-group-row-->
+                  <div class='form-group row'>
+                    <div class='col-md-3 col-form-label'>PCR product size</div>
+                    <div class='col-md-4'>
+                      <small id='product_min_info'>Minimum size (bp)</small>
+                      <input type='text' id='product_min' name='product_min' aria-describedby='product_min_info'
+                        class='form-control col' value='400' />
+                    </div><!--col-md-4-->
+                    <div class='col-md-4'>
+                      <small id='product_max_info'>Maximum size (bp)</small>
+                      <input type='text' id='product_max' name='product_max' aria-describedby='product_max_info'
+                        class='form-control col' value='600' />
+                    </div><!--col-md-4-->
+                  </div><!--form-group row-->
+                  <div class='row'> <!-- dummy row to match height of blast parameters card -->
+                    <p style='line-height:0.8'>&nbsp;</p>
+                  </div> <!-- row -->
+                  <div id='primer_help' style='display:none' class='row alert alert-primary'>
+                    <p>
+                      Parameters in this section affect the behaviour of primer3
+                      when designing primer pairs.
+                    </p>
+                    <p>
+                      <em>Melting temperature</em> defines the target
+                      temperature at which the DNA duplex dissociates to single
+                      stranded DNA. Lower melting temperatures are more likely to
+                      result in non-specific primer binding, while an increased
+                      melting temperature can increase primer specificity.
+                    </p>
+                    <p>
+                      <em>PCR product size</em> minimum and maximum values define
+                      an acceptable range of sizes for the resutling PCR product.
+                    </p>
+                  </div>
+                </div><!--card-body-->
+              </div><!--card-->
+            </div><!--col-md-6-->
+
+            <div class='col-md-6'>
+              <div class='card'>
+                <h2 class='card-header'>
+                  <span class='fas fa-question-circle help' onclick='helpToggle("blast_help",this);'></span>
+                  Blast Parameters
+                </h2>
+                <div class='card-body'>
+                  <div class='form-group row'>
+                    <div class='col-md-3 col-form-label'>Stringency</div>
+                    <div class='col-md-4'>
+                      <small id='string_min_info'>Minimum similarity</small>
+                      <input type='range' id='string_min' name='string_min' aria-describedby='string_min_info'
+                        class='form-control col' min='80' max='99' value='89'
+                        oninput='string_min_out.value=string_min.value + "%"' />
+                      <output id='string_min_out'></output>
+                    </div>
+                    <div class='col-md-4'>
+                      <small id='string_max_info'>Maximum similarity</small>
+                      <input type='range' id='string_max' name='string_max' aria-describedby='string_max_info'
+                        class='form-control col' min='80' max='99' value='99'
+                        oninput='string_max_out.value=string_max.value + "%";' />
+                      <output id='string_max_out'></output>
+                    </div>
+                  </div> <!-- row -->
+                  <div class='form-group row'>
+                    <label class='col-md-3 col-form-label' for='subunit_length'
+                      aria-describedby='subunit_length_info'>Subunit length (bp)</label>
+                    <div class='col-md-9'>
+                      <small id='subunit_length_info'>Minimum length of conflicting sequence</small>
+                      <select class='form-control' id='subunit_length' name='subunit_length'>
+                        <option>15</option>
+                        <option>16</option>
+                        <option>17</option>
+                        <option>18</option>
+                        <option>19</option>
+                        <option selected='selected'>20</option>
+                        <option>21</option>
+                        <option>22</option>
+                        <option>23</option>
+                        <option>24</option>
+                        <option>25</option>
+                      </select>
+                    </div> <!--col-md-4-->
+                  </div><!--form-group row-->
+                  <div class='form-group row'>
+                    <label class='col-md-3 col-form-label' for='database'
+                      aria-describedby='database_info'>Database</label>
+                    <div class='col-md-9'>
+                      <small id='database_info'>Select organism for RNAi target design</small>
+                      <select class='form-control' id='database' name='database' size='1' required>
+                        <option value=''>Please select...</option>
+
+                        
+                        <option value='brugia_malayi'>brugia_malayi</option>
+                        
+                        <option value='brugia_pahangi'>brugia_pahangi</option>
+                        
+                        <option value='brugia_timori'>brugia_timori</option>
+                        
+                        <option value='teladorsagia_circumcincta_tci2_wsi3'>teladorsagia_circumcincta_tci2_wsi3</option>
+                        
+
+                        <option value='TbruceiTREU927'>Trypanosoma brucei TREU927</option>
+                        <option value='TbruceiLister427'>Trypanosoma brucei Lister 427</option>
+                        <option value='TbruceiGambienseDAL972'>Trypanosoma brucei gambiense DAL972</option>
+                        <option value='TcongolenseIL3000'>Trypanosoma congolense IL3000</option>
+                      </select>
+                      <div class='invalid-feedback'>Please select a database</div>
+                    </div> <!--col-md-4-->
+                  </div><!--form-group row-->
+                  <div id='blast_help' style='display:none' class='row alert alert-primary'>
+                    <p>
+                      Parameters in this section affect how the PCR product
+                      resulting from each primer pair is assessed using Blast.
+                    </p>
+                    <p>
+                      <em>Stringency</em> defines the minimum and maximum
+                      percetange identity for a blast hit to be considered
+                      conflicting (and would consequently adversely affect
+                      RNAi). Hits of >99% identity covering >95% of the product
+                      are considered 'self' hits if only one such match is
+                      found, and most likely result from the predicted product
+                      matching itself in the database.
+                    </p>
+                    <p>
+                      <em>Subunit length</em> defines the minimum length of
+                      sequence with >100% identity to be permitted. Longer
+                      stretches of identical sequence may also adversely affect
+                      RNAi.
+                    </p>
+                    <p><em>Database</em> selects the organsism database to be
+                      used for similarity searches.
+                    </p>
+                  </div> <!--blast help-->
+                </div><!--card-body-->
+              </div><!--card-->
+            </div> <!--col-md-6-->
+
+          </div> <!--row-->
+          <div class='form-group row'>
+            <div class='col-md-12'>
+              <button type='submit' class='btn btn-primary'>Submit</button>
+              <button type='reset' class='btn btn-secondary'>Reset</button>
+            </div>
+          </div><!--row-->
+
+          <div class='card'>
+            <h2 class='card-header'>About RNAit</h2>
+            <div class='card-body'>
+              <p>RNAit is a tool to facilitate the accurate design of RNAi
+                constructs for typanosomes. Primer3 is used to identify potential
+                primer pairs for creation of RNAi constructs, and the resulting
+                products of these primer pairs are then screened against a blast
+                databases of CDS sequences from the target organism to identify
+                potentially conflicting sequences. Sequences which have >89%
+                identity, or stretches of >20bp of identical bases have been
+                identified as likely candidates for co-suppression.
+              </p>
+              <p>
+                Blast hits are placed in three categories as follows:
+              </p>
+              <table class='table'>
+                <tr>
+                  <th>Self match</th>
+                  <td>Sequence identity > 99%; Alignment length > 95% length of query sequence</td>
+                </tr>
+                <tr>
+                  <th>Conflicting</th>
+                  <td>Sequence identity between specified minimim and maximum values</td>
+                </tr>
+                <tr>
+                  <th>Exceeding subunit length</th>
+                  <td>Hits with exact matches longer than the defined subunit length</td>
+                </tr>
+              </table>
+              <p>Primer pairs which do not have any hits classified as 'Conficting'
+                or 'Exceeding subunit length' are considered good candidates.</p>
+              <p>RNAit was developed by <a href='http://fieldlab.org'>The Field
+                  Lab</a>. This is a reimplementation of the original system by <a
+                  href='http://www.compbio.dundee.ac.uk/dag.html'>The Data Analysis
+                  Group</a></p>
+              <p><span style='font-weight: bold'>Citation: </span>Redmond <span style='font-style:oblique'>et al.</span>
+                2003, Mol. Biochem.
+                Parasitol. 128:115-118. <a
+                  href=http://doi.org/doi:10.1016/S0166-6851(03)00045-8>doi:10.1016/S0166-6851(03)00045-8</a></p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

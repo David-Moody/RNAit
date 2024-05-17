@@ -1,0 +1,4 @@
+#RNAit_dir: /Users/jabbott/Development/RNAit/
+RNAit_dir: /app
+#tmp_dir: /Users/jabbott/Development/RNAit/tmp/
+tmp_dir: /tmp 

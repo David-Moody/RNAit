@@ -2,3 +2,7 @@ jinja2
 pyyaml
 primer3-py
 biopython
+# Required for WBParasite integration
+httpx 
+tqdm
+aiometer

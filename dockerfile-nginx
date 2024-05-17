@@ -1,0 +1,3 @@
+FROM harbor.peak.scot/hub/library/nginx:mainline
+COPY htdocs /app/htdocs
+COPY etc/nginx-site.conf /etc/nginx/conf.d/nginx.conf

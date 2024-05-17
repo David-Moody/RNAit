@@ -1,0 +1,25 @@
+#FROM continuumio/miniconda3:latest
+FROM harbor.peak.scot/hub/condaforge/mambaforge:latest as core
+
+RUN conda config --add channels defaults && \ 
+    conda config --add channels bioconda && \
+    conda config --add channels conda-forge && \
+    conda config --set channel_priority strict 
+
+RUN mamba install uwsgi nodejs primer3 blast -y && mamba clean -a -y
+#pyyaml primer3-py biopython nginx
+
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+
+EXPOSE 8080
+
+
+FROM core as db-builder
+COPY ./preprocessing /preprocessing
+CMD [ "python", "/preprocessing/create_blast_dbs.py"]
+
+FROM core as final
+COPY ./app /app
+COPY --link ./databases /app/databases
+CMD [ "/opt/conda/bin/uwsgi", "--ini", "/app/etc/uwsgi.conf"]
