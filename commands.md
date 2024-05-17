@@ -4,7 +4,11 @@
 
     docker build . -t harbor.peak.scot/public/rnait:db-builder --target=db-builder
 
-## Create BLAST databases
+## Create BLAST databases (Windows)
+
+    docker run -it --rm --mount type=bind,source=%cd%/fastas,target=/app/fastas --mount type=bind,source=%cd%/databases,target=/app/databases --mount type=bind,source=%cd%/app,target=/app harbor.peak.scot/public/rnait:db-builder
+
+## Create BLAST databases (Linux)
 
     docker run -it --rm --mount type=bind,source=%cd%/fastas,target=/app/fastas --mount type=bind,source=%cd%/databases,target=/app/databases --mount type=bind,source=%cd%/app,target=/app harbor.peak.scot/public/rnait:db-builder
 
