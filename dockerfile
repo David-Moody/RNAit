@@ -22,8 +22,8 @@ ENV PATH="/venv/bin:$PATH"
 RUN pip install -r requirements.txt --no-cache-dir
 
 
-#FROM harbor.peak.scot/hub/library/python:slim as base
-FROM gcr.io/distroless/base-debian12:latest as base
+FROM harbor.peak.scot/hub/library/python:slim as base
+#FROM gcr.io/distroless/base-debian12:latest as base
 COPY --from=builder /venv /venv
 ENV PATH="/venv/bin:$PATH"
 
